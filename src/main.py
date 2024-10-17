@@ -47,7 +47,6 @@ class MyService(Service):
             summary=api_summary,
             description=api_description,
             status=ServiceStatus.AVAILABLE,
-            # TODO: 4. CHANGE THE INPUT AND OUTPUT FIELDS, THE TAGS AND THE HAS_AI VARIABLE
             data_in_fields=[
                 FieldDescription(
                     name="image",
@@ -74,7 +73,6 @@ class MyService(Service):
         )
         self._logger = get_logger(settings)
 
-    # TODO: 5. CHANGE THE PROCESS METHOD (CORE OF THE SERVICE)
     def process(self, data):
         # NOTE that the data is a dictionary with the keys being the field names set in the data_in_fields
         # The objects in the data variable are always bytes. It is necessary to convert them to the desired type
@@ -92,6 +90,8 @@ class MyService(Service):
         image = BytesIO(raw)
         pil_image = Image.open(image)
         pil_image = ImageOps.grayscale(pil_image)
+
+        #TODO: improve resizing
         data = np.array(pil_image.resize(img_dim))
         data = np.expand_dims(data, axis=0)  # (1, 512, 512) we need a batch
         rotation = fd.predict(model, data)
