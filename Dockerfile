@@ -3,7 +3,8 @@ FROM python:3.11
 
 # Install all required packages to run the model
 # TODO: 1. Add any additional packages required to run your model
-# RUN apt update && apt install --yes package1 package2 ...
+RUN apt update && apt install --yes systemd-devel
+RUN python -m pip install --upgrade pip
 
 # Work directory
 WORKDIR /app
@@ -17,6 +18,7 @@ RUN pip install --requirement requirements.txt --requirement requirements-all.tx
 
 # Copy sources
 COPY src src
+COPY src/weights.keras src/weights.keras
 
 # Environment variables
 ENV ENVIRONMENT=${ENVIRONMENT}

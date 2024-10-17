@@ -17,17 +17,22 @@ from common_code.service.enums import ServiceStatus
 from common_code.common.enums import FieldDescriptionType, ExecutionUnitTagName, ExecutionUnitTagAcronym
 from common_code.common.models import FieldDescription, ExecutionUnitTag
 from contextlib import asynccontextmanager
+from PIL import Image, ImageOps
+from flipml import flip_detector as fd
 
 # Imports required by the service's model
-# TODO: 1. ADD REQUIRED IMPORTS (ALSO IN THE REQUIREMENTS.TXT)
+import numpy as np
+import tensorflow as tf
+import PIL
+from io import BytesIO
+from json import JSONEncoder
 
 settings = get_settings()
 
 
 class MyService(Service):
-    # TODO: 2. CHANGE THIS DESCRIPTION
     """
-    My service model
+    flipml model - detects if a scanned document is upside down
     """
 
     # Any additional fields must be excluded for Pydantic to work
@@ -36,9 +41,8 @@ class MyService(Service):
 
     def __init__(self):
         super().__init__(
-            # TODO: 3. CHANGE THE SERVICE NAME AND SLUG
-            name="My Service",
-            slug="my-service",
+            name="flipml service",
+            slug="flipml-service",
             url=settings.service_url,
             summary=api_summary,
             description=api_description,
@@ -64,8 +68,8 @@ class MyService(Service):
                     acronym=ExecutionUnitTagAcronym.IMAGE_PROCESSING,
                 ),
             ],
-            has_ai=False,
-            # OPTIONAL: CHANGE THE DOCS URL TO YOUR SERVICE'S DOCS
+            has_ai=True,
+            # TODO: CHANGE THE DOCS URL TO YOUR SERVICE'S DOCS
             docs_url="https://docs.swiss-ai-center.ch/reference/core-concepts/service/",
         )
         self._logger = get_logger(settings)
@@ -80,8 +84,20 @@ class MyService(Service):
         # ... do something with the raw data
 
         # NOTE that the result must be a dictionary with the keys being the field names set in the data_out_fields
+        raw = data["image"].data
+        input_type = data["image"].type
+        img_dim = (512, 512)
+
+        model = fd.load_model()
+        image = BytesIO(raw)
+        pil_image = Image.open(image)
+        pil_image = ImageOps.grayscale(pil_image)
+        data = np.array(pil_image.resize(img_dim))
+        data = np.expand_dims(data, axis=0)  # (1, 512, 512) we need a batch
+        rotation = fd.predict(model, data)
+        output = JSONEncoder().encode({'angle': rotation})
         return {
-            "result": TaskData(data=..., type=FieldDescriptionType.APPLICATION_JSON)
+            "result": TaskData(data=output, type=FieldDescriptionType.APPLICATION_JSON)
         }
 
 
@@ -135,16 +151,12 @@ async def lifespan(app: FastAPI):
         await service_service.graceful_shutdown(my_service, engine_url)
 
 
-# TODO: 6. CHANGE THE API DESCRIPTION AND SUMMARY
-api_description = """My service
-bla bla bla...
+api_description = """FlipML detects if a scanned document is upside down. It returns the angle of rotation, which can be either 0 or 180 degrees.
 """
-api_summary = """My service
-bla bla bla...
+api_summary = """FlipML detects if a scanned document is upside down. It returns the angle of rotation, which can be either 0 or 180 degrees.
 """
 
 # Define the FastAPI application with information
-# TODO: 7. CHANGE THE API TITLE, VERSION, CONTACT AND LICENSE
 app = FastAPI(
     lifespan=lifespan,
     title="Sample Service API.",
