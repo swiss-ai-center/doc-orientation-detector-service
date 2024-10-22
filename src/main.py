@@ -22,8 +22,6 @@ from flipml import flip_detector as fd
 
 # Imports required by the service's model
 import numpy as np
-import tensorflow as tf
-import PIL
 from io import BytesIO
 from json import JSONEncoder
 
@@ -83,7 +81,7 @@ class MyService(Service):
 
         # NOTE that the result must be a dictionary with the keys being the field names set in the data_out_fields
         raw = data["image"].data
-        input_type = data["image"].type
+        # input_type = data["image"].type
         img_dim = (512, 512)
 
         model = fd.load_model()
@@ -91,7 +89,7 @@ class MyService(Service):
         pil_image = Image.open(image)
         pil_image = ImageOps.grayscale(pil_image)
 
-        #TODO: improve resizing
+        # TODO: improve resizing
         data = np.array(pil_image.resize(img_dim))
         data = np.expand_dims(data, axis=0)  # (1, 512, 512) we need a batch
         rotation = fd.predict(model, data)
@@ -151,9 +149,11 @@ async def lifespan(app: FastAPI):
         await service_service.graceful_shutdown(my_service, engine_url)
 
 
-api_description = """FlipML detects if a scanned document is upside down. It returns the angle of rotation, which can be either 0 or 180 degrees.
+api_description = """FlipML detects if a scanned document is upside down. It returns the angle of rotation,
+ which can be either 0 or 180 degrees.
 """
-api_summary = """FlipML detects if a scanned document is upside down. It returns the angle of rotation, which can be either 0 or 180 degrees.
+api_summary = """FlipML detects if a scanned document is upside down. It returns the angle of rotation,
+ which can be either 0 or 180 degrees.
 """
 
 # Define the FastAPI application with information
