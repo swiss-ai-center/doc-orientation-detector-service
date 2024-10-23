@@ -39,7 +39,7 @@ class MyService(Service):
 
     def __init__(self):
         super().__init__(
-            name="document orientation detector service",
+            name="Document Orientation Detector",
             slug="doc-orientation-detector",
             url=settings.service_url,
             summary=api_summary,
