@@ -40,7 +40,7 @@ class MyService(Service):
     def __init__(self):
         super().__init__(
             name="document orientation detector service",
-            slug="doc-orientation-detector-service",
+            slug="doc-orientation-detector",
             url=settings.service_url,
             summary=api_summary,
             description=api_description,
@@ -159,7 +159,7 @@ It returns the angle of rotation, which can be either 0 or 180 degrees.
 # Define the FastAPI application with information
 app = FastAPI(
     lifespan=lifespan,
-    title="doc-orientation-detector API.",
+    title="Document Orientation Detector API.",
     description=api_description,
     version="0.0.1",
     contact={
