@@ -39,8 +39,8 @@ class MyService(Service):
 
     def __init__(self):
         super().__init__(
-            name="flipml service",
-            slug="flipml-service",
+            name="Document Orientation Detector",
+            slug="doc-orientation-detector",
             url=settings.service_url,
             summary=api_summary,
             description=api_description,
@@ -149,17 +149,17 @@ async def lifespan(app: FastAPI):
         await service_service.graceful_shutdown(my_service, engine_url)
 
 
-api_description = """FlipML detects if a scanned document is upside down. It returns the angle of rotation,
- which can be either 0 or 180 degrees.
+api_description = """The doc orientation detector service detects if a scanned document is upside down.
+It returns the angle of rotation, which can be either 0 or 180 degrees.
 """
-api_summary = """FlipML detects if a scanned document is upside down. It returns the angle of rotation,
- which can be either 0 or 180 degrees.
+api_summary = """The doc orientation detector service detects if a scanned document is upside down.
+It returns the angle of rotation, which can be either 0 or 180 degrees.
 """
 
 # Define the FastAPI application with information
 app = FastAPI(
     lifespan=lifespan,
-    title="Sample Service API.",
+    title="Document Orientation Detector API.",
     description=api_description,
     version="0.0.1",
     contact={
