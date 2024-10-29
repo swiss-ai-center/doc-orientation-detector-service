@@ -23,7 +23,6 @@ from flipml import flip_detector as fd
 # Imports required by the service's model
 import numpy as np
 from io import BytesIO
-from json import JSONEncoder
 
 settings = get_settings()
 
@@ -56,7 +55,7 @@ class MyService(Service):
             ],
             data_out_fields=[
                 FieldDescription(
-                    name="result", type=[FieldDescriptionType.APPLICATION_JSON]
+                    name="result", type=[FieldDescriptionType.TEXT_PLAIN]
                 ),
             ],
             tags=[
@@ -93,9 +92,9 @@ class MyService(Service):
         data = np.array(pil_image.resize(img_dim))
         data = np.expand_dims(data, axis=0)  # (1, 512, 512) we need a batch
         rotation = fd.predict(model, data)
-        output = JSONEncoder().encode({'angle': rotation})
+        output = str(rotation)
         return {
-            "result": TaskData(data=output, type=FieldDescriptionType.APPLICATION_JSON)
+            "result": TaskData(data=output, type=FieldDescriptionType.TEXT_PLAIN)
         }
 
 
