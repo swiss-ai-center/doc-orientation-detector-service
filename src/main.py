@@ -151,8 +151,7 @@ async def lifespan(app: FastAPI):
 api_description = """The doc orientation detector service detects if a scanned document is upside down.
 It returns the angle of rotation, which can be either 0 or 180 degrees.
 """
-api_summary = """The doc orientation detector service detects if a scanned document is upside down.
-It returns the angle of rotation, which can be either 0 or 180 degrees.
+api_summary = """Detects if a scanned document is upside down.
 """
 
 # Define the FastAPI application with information
