@@ -65,20 +65,14 @@ class MyService(Service):
                 ),
             ],
             has_ai=True,
-            # TODO: CHANGE THE DOCS URL TO YOUR SERVICE'S DOCS
-            docs_url="https://docs.swiss-ai-center.ch/reference/core-concepts/service/",
+            docs_url="https://docs.swiss-ai-center.ch/reference/services/doc-orientation-detector/",
         )
         self._logger = get_logger(settings)
 
     def process(self, data):
         # NOTE that the data is a dictionary with the keys being the field names set in the data_in_fields
         # The objects in the data variable are always bytes. It is necessary to convert them to the desired type
-        # before using them.
-        # raw = data["image"].data
-        # input_type = data["image"].type
-        # ... do something with the raw data
 
-        # NOTE that the result must be a dictionary with the keys being the field names set in the data_out_fields
         raw = data["image"].data
         # input_type = data["image"].type
         img_dim = (512, 512)
@@ -92,6 +86,8 @@ class MyService(Service):
         data = np.array(pil_image.resize(img_dim))
         data = np.expand_dims(data, axis=0)  # (1, 512, 512) we need a batch
         rotation = fd.predict(model, data)
+        # NOTE that the result must be a dictionary with the keys being the field names set in the data_out_fields
+
         output = str(rotation)
         return {
             "result": TaskData(data=output, type=FieldDescriptionType.TEXT_PLAIN)
